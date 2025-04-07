@@ -28,3 +28,5 @@ window.fetch = async (...args) => {
 
 console.log("Loading fauna extension (patch fetch)");
 
+window.faunaLoadData(window.parent.parent.location);
+
