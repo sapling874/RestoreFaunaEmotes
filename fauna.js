@@ -105,11 +105,6 @@ function patchAction(action) {
 					"url": browser.runtime.getURL(image),
 					"width": 24,
 					"height": 24
-				  },
-				  {
-					"url": browser.runtime.getURL(image),
-					"width": 48,
-					"height": 48
 				  }
 				],
 				"accessibility": {
