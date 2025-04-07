@@ -1,3 +1,4 @@
+var disabled;
 var chatData;
 var chatDataLoaded = false;
 
@@ -9,33 +10,43 @@ function getVideoID(loc) {
 }
 
 function loadData(url) {
-	if (chatDataLoaded) {
-		console.debug("Data already loading, returning early");
+	if (disabled || chatDataLoaded) {
 		return;
 	}
 
 	videoID = getVideoID(url);
-	console.debug("Loading chat for video ID: ", videoID);
 	fileLocation = browser.runtime.getURL(`chat_data/${videoID}.json`);
-	console.debug("Loading from file location ", fileLocation);
 
 	// Can't do this using fetch or as an asynchronous request.
 	// To do that, this request would need to be marked async,
 	// and that breaks the function return as the main window
 	// script hits a permission error on the returned Promise.
 	// At least that is what I think is happening.
-	xhr = new XMLHttpRequest();
-	xhr.open("GET", fileLocation, false);
-	xhr.send();
+	try {
+		xhr = new XMLHttpRequest();
+		xhr.open("GET", fileLocation, false);
+		xhr.send();
+	} catch (err) {
+		if (err.name == "NetworkError") {
+			// File not found, disable for this video.
+			console.debug("Disabling");
+			disabled = true;
+			return
+		}
+		// Unknown, throw it.
+		throw err;
+	}
 	chatData = JSON.parse(xhr.responseText);
+
+	console.debug("Loaded chat data for video ID: ", videoID);
+	console.debug("Loaded from file location ", fileLocation);
 
 	chatDataLoaded = true;
 	return;
 }
 
 function patchAction(action) {
-	if (chatData === undefined) {
-		console.debug("Returning early as no chat data loaded");
+	if (disabled == true || chatData === undefined) {
 		return;
 	}
 
