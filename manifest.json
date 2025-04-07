@@ -45,6 +45,10 @@
 	{
 	  "resources": ["badges/*.png"],
 	  "matches": ["<all_urls>"]
+	},
+	{
+	  "resources": ["chat_data/*.json"],
+	  "matches": ["<all_urls>"]
 	}
   ]
 }
