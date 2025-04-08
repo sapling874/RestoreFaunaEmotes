@@ -28,7 +28,33 @@ async function loadData(url) {
 	console.debug("Loaded from file location ", fileLocation);
 	chatDataLoaded = true;
 
+	replaceInitialData();
+
 	return;
+}
+
+function replaceInitialData() {
+	const scripts = document.querySelector("body").querySelectorAll("script");
+	if (!scripts) {
+		console.error("Unable to get script elements");
+		return
+	}
+
+	for (var i=0; i<scripts.length; i++) {
+		const start = 'window["ytInitialData"] = ';
+		const text = scripts[i].text;
+		if (!text || !text.startsWith(start)) {
+			continue;
+		}
+		const initialData = JSON.parse(text.replace(start, '').slice(0, -1));
+		for (const action of initialData.continuationContents.liveChatContinuation.actions) {
+			patchAction(action);
+		}
+		const newScript = document.createElement("script");
+		stringData = JSON.stringify(initialData);
+		newScript.text = `${start}${stringData};`;
+		document.querySelector("body").querySelectorAll("script")[i].replaceWith(newScript);
+	}
 }
 
 function patchAction(action) {
@@ -36,10 +62,11 @@ function patchAction(action) {
 		return;
 	}
 
-	// Isolated extension code can't modify object that comes
-	// from main window script, need to clone it and return the copy.
-	//action = structuredClone(action);
-	action = action.wrappedJSObject;
+	if (action.hasOwnProperty("wrappedJSObject")) {
+		// Objects passed from main window code have a
+		// read only wrapper around them. Discard it.
+		action = action.wrappedJSObject;
+	}
 
 	if (action.replayChatItemAction === undefined) {
 		return;
