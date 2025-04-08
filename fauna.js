@@ -103,6 +103,7 @@ function patchAction(action) {
 	// 		"Member (6 months)": "badges/6months.png",
 	// 		"Member (1 year)": "badges/1year.png",
 	// 		"Member (2 years)": "badges/2years.png"
+	// 		"Member (3 years)": "badges/3years.png"
 	// 	};
 	// 	image = mapping[badge.tooltip];
 	// 	// Have to clone this object back into the main window scope,
