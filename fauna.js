@@ -2,20 +2,16 @@ var disabled;
 var chatData;
 var chatDataLoaded = false;
 
-function getVideoID(loc) {
-	if (loc.pathname == "/watch") {
-		params = new URLSearchParams(loc.search);
-		return params.get("v");
-	}
+function isFaunaArchive(videoId) {
+	return faunaVideoIds.includes(videoId);
 }
 
-async function loadData(url) {
+async function loadData(videoId) {
 	if (disabled || chatDataLoaded) {
 		return;
 	}
 
-	videoID = getVideoID(url);
-	fileLocation = browser.runtime.getURL(`chat_data/${videoID}.json.gz`);
+	fileLocation = browser.runtime.getURL(`chat_data/${videoId}.live_chat.json.gz`);
 
 	ds = new DecompressionStream("gzip");
 	data = await fetch(fileLocation);
@@ -24,7 +20,7 @@ async function loadData(url) {
 	jsonData = await new Response(streamData).json();
 	chatData = jsonData;
 
-	console.debug("Loaded chat data for video ID: ", videoID);
+	console.debug("Loaded chat data for video ID: ", videoId);
 	console.debug("Loaded from file location ", fileLocation);
 	chatDataLoaded = true;
 
@@ -144,6 +140,10 @@ function patchAction(action) {
 		}
 	}
 }
+
+exportFunction(isFaunaArchive, window, {
+	defineAs: "isFaunaArchive",
+});
 
 exportFunction(loadData, window, {
 	defineAs: "faunaLoadData",

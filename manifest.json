@@ -20,7 +20,7 @@
         "https://studio.youtube.com/live_chat_replay*",
         "https://www.youtube.com/embed/hyperchat_embed?*"
       ],
-      "js": ["fauna.js"],
+      "js": ["video-ids.js", "fauna.js"],
 	  "all_frames": true
     },
 	{
