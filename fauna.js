@@ -2,6 +2,8 @@ var disabled;
 var chatData;
 var chatDataLoaded = false;
 
+var timestampNameData = {};
+
 function isFaunaArchive(videoId) {
 	return faunaVideoIds.includes(videoId);
 }
@@ -44,7 +46,7 @@ function replaceInitialData() {
 		}
 		const initialData = JSON.parse(text.replace(start, '').slice(0, -1));
 		for (const action of initialData.continuationContents.liveChatContinuation.actions) {
-			patchAction(action);
+			patchAction(action, true);
 		}
 		const newScript = document.createElement("script");
 		stringData = JSON.stringify(initialData);
@@ -53,7 +55,7 @@ function replaceInitialData() {
 	}
 }
 
-function patchAction(action) {
+function patchAction(action, store) {
 	if (disabled == true || chatData === undefined) {
 		return;
 	}
@@ -82,6 +84,19 @@ function patchAction(action) {
 
 	renderer = action.replayChatItemAction.actions[0].addChatItemAction.item.liveChatTextMessageRenderer;
 	timestamp = renderer["timestampUsec"]
+
+	// On standard youtube chat, can't intercept the initial data directly,
+	// so need to build up a data set linking timestamp/author combinations to emotes.
+	// Only need to store this for the initial batch of messages.
+	const simpleTimestamp = renderer.timestampText.simpleText;
+	const authorName = renderer.authorName.simpleText;
+	if (store) {
+		if (!timestampNameData.hasOwnProperty(simpleTimestamp)) {
+			timestampNameData[simpleTimestamp] = {}
+		}
+		timestampNameData[simpleTimestamp][authorName] = []
+	}
+
 
 	// Disabling this for now as the normal youtube chat window doesn't
 	// like it when the image url is changed to moz-extension://....
@@ -119,11 +134,15 @@ function patchAction(action) {
 			delete run["text"];
 			emoteName = chatData[timestamp][index];
 			image = `emotes/${emoteName}.png`
+			imageURL = browser.runtime.getURL(image);
+			if (store) {
+				timestampNameData[simpleTimestamp][authorName].push({"url": imageURL, name: emoteName});
+			}
 			run.emoji = cloneInto({
 			  "image": {
 				"thumbnails": [
 				  {
-					"url": browser.runtime.getURL(image),
+					"url": imageURL,
 					"width": 24,
 					"height": 24
 				  }
@@ -152,6 +171,70 @@ exportFunction(loadData, window, {
 exportFunction(patchAction, window, {
 	defineAs: "faunaPatchAction",
 });
+
+function replaceMessageEmotes(node) {
+	const content = node.querySelector("#content");
+	const timestamp = content.querySelector("#timestamp").textContent;
+	const authorName = content.querySelector("yt-live-chat-author-chip").querySelector("#author-name").textContent;
+	const message = content.querySelector("#message");
+
+	if (!timestampNameData.hasOwnProperty(timestamp)) {
+		// All the initial emotes have been displayed.
+		// Return false here to signal that the observer
+		// can be disconnected.
+		return false;
+	}
+	// Look up the emotes by the timestamp, and author name.
+	const emoteData = timestampNameData[timestamp][authorName];
+
+	var index = 0;
+	for (const run of message.childNodes) {
+		if (run.textContent == "□") {
+			// Replace each square in the message
+			// with the corresponding emote.
+			const emote = emoteData[index];
+			if (!emote) {
+				continue;
+			}
+			newImg = document.createElement("img");
+			newImg.classList.add("emoji");
+			newImg.classList.add("style-scope");
+			newImg.classList.add("yt-formatted-string")
+			newImg.classList.add("yt-live-chat-text-message-renderer");
+			newImg.src = emote.url;
+			newImg.alt = emote.name;
+			run.replaceWith(newImg);
+			index += 1;
+		}
+	}
+	return true;
+}
+
+chatItemsList = document.getElementById("items");
+if (chatItemsList) {
+	// Standard youtube chat, not HyperChat.
+	// Replacing the ytInitialData script doesn't
+	// work for this, so need to watch each message
+	// coming in and replace its contents directly.
+	const observeConfig = {childList: true, attributes: false, subtree: false};
+	const callback = (mutationList, observer) => {
+		for (const mutation of mutationList) {
+			// Loop over the new nodes added to the chat box div.
+			for (const addedNode of mutation.addedNodes) {
+				if (addedNode.nodeName == "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
+					keepGoing = replaceMessageEmotes(addedNode);
+					if (!keepGoing) {
+						// All initial messages have been added to the chat box,
+						// disconnect the observer as it isn't needed anymore.
+						observer.disconnect();
+					}
+				}
+			}
+		}
+	}
+	const observer = new MutationObserver(callback);
+	observer.observe(chatItemsList, observeConfig);
+}
 
 console.log("Loading fauna extension (isolated)");
 
