@@ -22,6 +22,11 @@ chat_data = {}
 
 def parse(renderer):
     timestamp = renderer["timestampUsec"]
+
+    if "message" not in renderer:
+        # Happens with superchats with no message.
+        return timestamp, []
+
     message = renderer["message"]
 
     emotes = []
