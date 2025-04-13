@@ -4,6 +4,8 @@ import os.path as op
 import pathlib
 import sys
 
+import encode
+
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", type=pathlib.Path)
 args = parser.parse_args()
@@ -51,7 +53,7 @@ with open(filename) as f:
 
             if len(emojis) > 0:
                 assert timestamp not in chat_data
-                chat_data[timestamp] = emojis
+                chat_data[timestamp] = encode.encode_emotes(emojis)
 
 print("Output file: ", out_filename)
 print("Total messages stored: ", len(chat_data))
