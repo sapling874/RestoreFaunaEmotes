@@ -128,11 +128,11 @@ function patchAction(action, store) {
 	// 	], action);
 	// }
 	
-	var index = 0;
+	const emotes = decodeEmotes(chatData[timestamp]);
 	for (const run of renderer.message.runs) {
 		if (run.text == "□") {
 			delete run["text"];
-			emoteName = chatData[timestamp][index];
+			emoteName = emotes.next().value;
 			image = `emotes/${emoteName}.png`
 			imageURL = browser.runtime.getURL(image);
 			if (store) {
@@ -155,7 +155,6 @@ function patchAction(action, store) {
 			  },
 			  "isCustomEmoji": true
 			}, action);
-			index += 1;
 		}
 	}
 }
