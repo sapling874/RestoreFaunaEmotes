@@ -55,35 +55,50 @@ function replaceInitialData() {
 	}
 }
 
-function patchAction(action, store) {
+function patchAction(message, store) {
 	if (disabled == true || chatData === undefined) {
 		return;
 	}
 
-	if (action.hasOwnProperty("wrappedJSObject")) {
+	if (message.hasOwnProperty("wrappedJSObject")) {
 		// Objects passed from main window code have a
 		// read only wrapper around them. Discard it.
-		action = action.wrappedJSObject;
+		message = message.wrappedJSObject;
 	}
 
-	if (action.replayChatItemAction === undefined) {
+	if (message.replayChatItemAction === undefined) {
 		return;
 	}
-	if (action.replayChatItemAction.actions[0] === undefined) {
-		return;
-	}
-	if (action.replayChatItemAction.actions[0].addChatItemAction === undefined) {
-		return;
-	}
-	if (action.replayChatItemAction.actions[0].addChatItemAction.item === undefined) {
-		return;
-	}
-	if (action.replayChatItemAction.actions[0].addChatItemAction.item.liveChatTextMessageRenderer === undefined) {
+	if (message.replayChatItemAction.actions[0] === undefined) {
 		return;
 	}
 
-	renderer = action.replayChatItemAction.actions[0].addChatItemAction.item.liveChatTextMessageRenderer;
-	timestamp = renderer["timestampUsec"]
+	const action = message.replayChatItemAction.actions[0];
+
+	if (!action.hasOwnProperty("addChatItemAction")) {
+		return;
+	}
+	const item = action.addChatItemAction.item;
+
+	var renderer;
+	if (item.hasOwnProperty("liveChatTextMessageRenderer")) {
+		// Normal chat message.
+		renderer = item.liveChatTextMessageRenderer;
+	} else if (item.hasOwnProperty("liveChatMembershipItemRenderer")) {
+		// Membership message.
+		renderer = item.liveChatMembershipItemRenderer;
+	} else if (item.hasOwnProperty("liveChatPaidMessageRenderer")) {
+		// Normal superchat.
+		renderer = item.liveChatPaidMessageRenderer;
+	} else {
+		return;
+	}
+
+	if (!renderer.hasOwnProperty("message")) {
+		return;
+	}
+
+	timestamp = renderer["timestampUsec"];
 
 	// On standard youtube chat, can't intercept the initial data directly,
 	// so need to build up a data set linking timestamp/author combinations to emotes.
@@ -171,11 +186,28 @@ exportFunction(patchAction, window, {
 	defineAs: "faunaPatchAction",
 });
 
-function replaceMessageEmotes(node) {
-	const content = node.querySelector("#content");
-	const timestamp = content.querySelector("#timestamp").textContent;
-	const authorName = content.querySelector("yt-live-chat-author-chip").querySelector("#author-name").textContent;
-	const message = content.querySelector("#message");
+function replaceMessageEmotes(node, isMemberchat, isSuperchat) {
+	var timestamp;
+	var authorName;
+	var message;
+	if (isMemberchat) {
+		const card = node.querySelector("#card");
+		const header = card.querySelector("#header").querySelector("#header-content");
+		timestamp = header.querySelector("#timestamp").textContent;
+		authorName = header.querySelector("#header-content-primary-column > #header-content-inner-column > yt-live-chat-author-chip > #author-name").textContent;
+		message = card.querySelector("#content > #message");
+	} else if (isSuperchat) {
+		const card = node.querySelector("#card");
+		const header = card.querySelector("#header").querySelector("#header-content");
+		timestamp = header.querySelector("#timestamp").textContent;
+		authorName = header.querySelector("#header-content-primary-column > #single-line > #author-name-chip > yt-live-chat-author-chip > #author-name").textContent;
+		message = card.querySelector("#content > #message");
+	} else {
+		const content = node.querySelector("#content");
+		timestamp = content.querySelector("#timestamp").textContent;
+		authorName = content.querySelector("yt-live-chat-author-chip").querySelector("#author-name").textContent;
+		message = content.querySelector("#message");
+	}
 
 	if (!timestampNameData.hasOwnProperty(timestamp)) {
 		// All the initial emotes have been displayed.
@@ -199,7 +231,13 @@ function replaceMessageEmotes(node) {
 			newImg.classList.add("emoji");
 			newImg.classList.add("style-scope");
 			newImg.classList.add("yt-formatted-string")
-			newImg.classList.add("yt-live-chat-text-message-renderer");
+			if (isMemberchat) {
+				newImg.classList.add("yt-live-chat-membership-item-renderer");
+			} else if (isSuperchat) {
+				newImg.classList.add("yt-live-chat-paid-message-renderer");
+			} else {
+				newImg.classList.add("yt-live-chat-text-message-renderer");
+			}
 			newImg.src = emote.url;
 			newImg.alt = emote.name;
 			run.replaceWith(newImg);
@@ -220,13 +258,18 @@ if (chatItemsList) {
 		for (const mutation of mutationList) {
 			// Loop over the new nodes added to the chat box div.
 			for (const addedNode of mutation.addedNodes) {
+				var keepGoing;
 				if (addedNode.nodeName == "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
 					keepGoing = replaceMessageEmotes(addedNode);
-					if (!keepGoing) {
-						// All initial messages have been added to the chat box,
-						// disconnect the observer as it isn't needed anymore.
-						observer.disconnect();
-					}
+				} else if (addedNode.nodeName == "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
+					keepGoing = replaceMessageEmotes(addedNode, true, false);
+				} else if (addedNode.nodeName == "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
+					keepGoing = replaceMessageEmotes(addedNode, false, true);
+				}
+				if (!keepGoing) {
+					// All initial messages have been added to the chat box,
+					// disconnect the observer as it isn't needed anymore.
+					observer.disconnect();
 				}
 			}
 		}
