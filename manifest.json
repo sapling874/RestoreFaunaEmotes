@@ -17,8 +17,7 @@
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*",
         "https://studio.youtube.com/live_chat*",
-        "https://studio.youtube.com/live_chat_replay*",
-        "https://www.youtube.com/embed/hyperchat_embed?*"
+        "https://studio.youtube.com/live_chat_replay*"
       ],
       "js": ["video-ids.js", "decode.js", "fauna.js"],
 	  "all_frames": true
@@ -29,8 +28,7 @@
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*",
         "https://studio.youtube.com/live_chat*",
-        "https://studio.youtube.com/live_chat_replay*",
-        "https://www.youtube.com/embed/hyperchat_embed?*"
+        "https://studio.youtube.com/live_chat_replay*"
       ],
 	  "js": ["patch-fetch.js"],
 	  "all_frames": true,
