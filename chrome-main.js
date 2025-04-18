@@ -1,4 +1,4 @@
-const faunaExtensionId = "flhcccabjfcbgidalgkimgfggalganaa";
+const faunaExtensionId = document.querySelector("#fauna-extension-id").textContent;
 
 const videoId = window.parent.ytInitialData.currentVideoEndpoint.watchEndpoint.videoId;
 

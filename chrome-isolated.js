@@ -1,3 +1,13 @@
+// Pass the extension ID to the main world script
+// by way of an invisible div.
+// It needs the ID to be able to communicate with
+// the background process.
+idDiv = document.createElement("div");
+idDiv.id = "fauna-extension-id";
+idDiv.textContent = chrome.runtime.id;
+idDiv.style = "display: none;"
+document.querySelector("body").appendChild(idDiv);
+
 var videoId;
 const searchParams = new URLSearchParams(window.parent.location.search);
 if (searchParams.has("v")) {
