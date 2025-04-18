@@ -94,9 +94,7 @@ for k in list(collisions.keys()):
     if k in chat_data:
         del collisions[k]
 
-print("Output file: ", out_filename)
-print("Total messages stored: ", len(chat_data))
-print("Total collisions: ", len(collisions))
+print("file={} messages={} collisions={}".format(out_filename, len(chat_data), len(collisions)))
 
 out_data = {
     "collisions": collisions,
