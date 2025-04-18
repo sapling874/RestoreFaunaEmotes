@@ -117,4 +117,4 @@ out_data = {
 }
 
 with open(out_filename, "w") as out:
-    json.dump(out_data, out)
+    json.dump(out_data, out, indent=2)
