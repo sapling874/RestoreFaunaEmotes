@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Restore Fauna Emotes",
+  "version": "1.0",
+
+  "description": "Restore chat emotes on Fauna stream archives.",
+
+  "icons": {
+    "48": "icons/sapling-48.png",
+    "96": "icons/sapling-96.png"
+  },
+  "permissions": ["tabs"],
+
+  "background": {
+	"service_worker": "chrome-background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/live_chat*",
+        "https://www.youtube.com/live_chat_replay*"
+      ],
+      "js": ["badges-base64.js", "chrome-isolated.js", "yt-observer.js"],
+	  "all_frames": true
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/live_chat*",
+        "https://www.youtube.com/live_chat_replay*"
+      ],
+      "js": ["video-ids.js", "chrome-main.js"],
+	  "world": "MAIN",
+	  "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+	{
+	  "resources": ["emotes/*.png"],
+	  "matches": ["<all_urls>"]
+	},
+	{
+	  "resources": ["chat_data/*.json.gz"],
+	  "matches": ["<all_urls>"]
+	}
+  ],
+  "externally_connectable": {
+    "matches": [
+      "https://www.youtube.com/",
+	  "https://www.youtube.com/live_chat*",
+      "https://www.youtube.com/live_chat_replay*"
+    ]
+  }
+}
+
