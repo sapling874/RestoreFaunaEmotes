@@ -13,9 +13,9 @@ if (window.isFaunaArchive(videoId)) {
 		if (url == "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat_replay?prettyPrint=false") {
 			bodyJson = await (result.clone()).json();
 
-			for (const action of bodyJson.continuationContents.liveChatContinuation.actions) {
-				window.faunaPatchAction(action);
-			}
+			actionsJson = JSON.stringify(bodyJson.continuationContents.liveChatContinuation.actions);
+			patchedActions = window.faunaPatchActions(actionsJson);
+			bodyJson.continuationContents.liveChatContinuation.actions = JSON.parse(patchedActions);
 			return new Response(JSON.stringify(bodyJson));
 		}
 
