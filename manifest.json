@@ -19,7 +19,7 @@
         "https://studio.youtube.com/live_chat*",
         "https://studio.youtube.com/live_chat_replay*"
       ],
-      "js": ["video-ids.js", "decode.js", "fauna.js"],
+      "js": ["video-ids.js", "badges-base64.js", "decode.js", "fauna.js"],
 	  "all_frames": true
     },
 	{

@@ -113,35 +113,23 @@ function patchAction(message, store) {
 	}
 
 
-	// Disabling this for now as the normal youtube chat window doesn't
-	// like it when the image url is changed to moz-extension://....
+	// The normal youtube chat window doesn't like it when the image url
+	// is changed to moz-extension://.... so use base64 data instead.
 	// The hyperchat window is fine with it, but the youtube javascript
-	// must do some processing on it that garbles it into an error message.
-	// For now, youtube is still serving the member badges so will leave this in.
-	// When it comes to it, can set the image as base64 data directly in the src
-	// and that works for both chat windows.
-	// if ("authorBadges" in renderer) {
-	// 	badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
-	// 	mapping = {
-	// 		"New member": "badges/new.png",
-	// 		"Member (1 month)": "badges/1month.png",
-	// 		"Member (2 months)": "badges/2months.png",
-	// 		"Member (6 months)": "badges/6months.png",
-	// 		"Member (1 year)": "badges/1year.png",
-	// 		"Member (2 years)": "badges/2years.png"
-	// 		"Member (3 years)": "badges/3years.png"
-	// 	};
-	// 	image = mapping[badge.tooltip];
-	// 	// Have to clone this object back into the main window scope,
-	// 	// using the action as a reference to that scope.
-	// 	badge.customThumbnail.thumbnails = cloneInto([
-	// 		{
-	// 			"url": browser.runtime.getURL(image),
-	// 			"width": 16,
-	// 			"height": 16
-	// 		}
-	// 	], action);
-	// }
+	// does some processing on it that garbles the URL into an error message.
+	if (renderer.hasOwnProperty("authorBadges")) {
+		badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
+		imageData = badgesData[badge.tooltip];
+		// Have to clone this object back into the main window scope,
+		// using the action as a reference to that scope.
+		badge.customThumbnail.thumbnails = cloneInto([
+			{
+				"url": imageData,
+				"width": 16,
+				"height": 16
+			}
+		], action);
+	}
 	
 	const emotes = decodeEmotes(chatData[timestamp]);
 	for (const run of renderer.message.runs) {
@@ -186,7 +174,18 @@ exportFunction(patchAction, window, {
 	defineAs: "faunaPatchAction",
 });
 
+function replaceBadge(node) {
+	if (!node) {
+		return;
+	}
+	badge = node.querySelector("yt-live-chat-author-chip > #chat-badges > yt-live-chat-author-badge-renderer > #image > img");
+	if (badge) {
+		badge.src = badgesData[badge.alt];
+	}
+}
+
 function replaceMessageEmotes(node, isMemberchat, isSuperchat) {
+	const isNormalMessage = (!isMemberchat && !isSuperchat);
 	var timestamp;
 	var authorName;
 	var message;
@@ -194,26 +193,40 @@ function replaceMessageEmotes(node, isMemberchat, isSuperchat) {
 		const card = node.querySelector("#card");
 		const header = card.querySelector("#header").querySelector("#header-content");
 		timestamp = header.querySelector("#timestamp").textContent;
-		authorName = header.querySelector("#header-content-primary-column > #header-content-inner-column > yt-live-chat-author-chip > #author-name").textContent;
+		authorBox = header.querySelector("#header-content-primary-column > #header-content-inner-column > yt-live-chat-author-chip");
+		authorName = authorBox.querySelector("#author-name").textContent;
 		message = card.querySelector("#content > #message");
+
+		replaceBadge(authorBox.querySelector("#chat-badges"));
 	} else if (isSuperchat) {
 		const card = node.querySelector("#card");
 		const header = card.querySelector("#header").querySelector("#header-content");
 		timestamp = header.querySelector("#timestamp").textContent;
-		authorName = header.querySelector("#header-content-primary-column > #single-line > #author-name-chip > yt-live-chat-author-chip > #author-name").textContent;
+		authorBox = header.querySelector("#header-content-primary-column > #single-line > #author-name-chip > yt-live-chat-author-chip");
+		authorName = authorBox.querySelector("#author-name").textContent;
 		message = card.querySelector("#content > #message");
+
+		replaceBadge(authorBox);
 	} else {
 		const content = node.querySelector("#content");
 		timestamp = content.querySelector("#timestamp").textContent;
 		authorName = content.querySelector("yt-live-chat-author-chip").querySelector("#author-name").textContent;
 		message = content.querySelector("#message");
+
+		replaceBadge(content);
 	}
 
 	if (!timestampNameData.hasOwnProperty(timestamp)) {
-		// All the initial emotes have been displayed.
-		// Return false here to signal that the observer
-		// can be disconnected.
-		return false;
+		if (isNormalMessage) {
+			// If a normal message isn't in the initial data,
+			// then all the initial emotes have been displayed.
+			// Return false to signal that the observer can
+			// be disconnected.
+			return false;
+		}
+		// Things like joining membership messages aren't in
+		// the initial data, so continue on those.
+		return true;
 	}
 	// Look up the emotes by the timestamp, and author name.
 	const emoteData = timestampNameData[timestamp][authorName];
@@ -258,13 +271,17 @@ if (chatItemsList) {
 		for (const mutation of mutationList) {
 			// Loop over the new nodes added to the chat box div.
 			for (const addedNode of mutation.addedNodes) {
-				var keepGoing;
+				var keepGoing = true;
 				if (addedNode.nodeName == "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER") {
 					keepGoing = replaceMessageEmotes(addedNode);
 				} else if (addedNode.nodeName == "YT-LIVE-CHAT-MEMBERSHIP-ITEM-RENDERER") {
 					keepGoing = replaceMessageEmotes(addedNode, true, false);
 				} else if (addedNode.nodeName == "YT-LIVE-CHAT-PAID-MESSAGE-RENDERER") {
 					keepGoing = replaceMessageEmotes(addedNode, false, true);
+				} else if (addedNode.nodeName == "YT-LIVE-CHAT-PAID-STICKER-RENDERER") {
+					replaceBadge(addedNode.querySelector("#card > #author-info > #content > #content-primary-column > #author-name-chip"));
+				} else if (addedNode.nodeName == "YTD-SPONSORSHIPS-LIVE-CHAT-GIFT-PURCHASE-ANNOUNCEMENT-RENDERER") {
+					replaceBadge(addedNode.querySelector("#header > #header > #content > #header-content > #header-content-primary-column > #header-content-inner-column"));
 				}
 				if (!keepGoing) {
 					// All initial messages have been added to the chat box,
