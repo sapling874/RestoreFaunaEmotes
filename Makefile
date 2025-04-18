@@ -1,6 +1,9 @@
 .PHONY: process_raw_data
 process_raw_data:
-	time ls raw_chat_data/ | xargs -P 8 -I {} python scripts/process.py raw_chat_data/{}
+	time ls raw_chat_data/ | xargs -P 8 -I {} python scripts/process.py raw_chat_data/{} | tee stats.txt
+	@echo "Total messages: $$(cat stats.txt | awk '{print $$2}' | sed 's/messages=//' | awk '{sum+=$$1;} END{print sum;}')"
+	@echo "Total emotes: $$(cat stats.txt | awk '{print $$3}' | sed 's/emotes=//' | awk '{sum+=$$1;} END{print sum;}')"
+	@echo "Total collisions: $$(cat stats.txt | awk '{print $$4}' | sed 's/collisions=//' | awk '{sum+=$$1;} END{print sum;}')"
 
 .PHONY: compress_chat_data
 compress_chat_data:
