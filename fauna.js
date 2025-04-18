@@ -1,4 +1,3 @@
-var disabled;
 var chatData;
 var chatDataLoaded = false;
 
@@ -9,7 +8,7 @@ function isFaunaArchive(videoId) {
 }
 
 async function loadData(videoId) {
-	if (disabled || chatDataLoaded) {
+	if (chatDataLoaded) {
 		return;
 	}
 
@@ -56,7 +55,7 @@ function replaceInitialData() {
 }
 
 function patchAction(message, store) {
-	if (disabled == true || chatData === undefined) {
+	if (chatData === undefined) {
 		return;
 	}
 
