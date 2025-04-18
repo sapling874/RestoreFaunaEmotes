@@ -9,7 +9,6 @@
     "48": "icons/sapling-48.png",
     "96": "icons/sapling-96.png"
   },
-  "permissions": ["tabs"],
 
   "background": {
 	"service_worker": "chrome-background.js"
