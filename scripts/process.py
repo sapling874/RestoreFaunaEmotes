@@ -21,6 +21,8 @@ out_filename = pathlib.Path("chat_data") / filename.name
 collisions = {}
 chat_data = {}
 
+total_emotes = 0
+
 # One video's data for some reason has messages repeated
 # multiple times. As these aren't actual collisions, track
 # which IDs have already been seen and ignore the repeats.
@@ -87,6 +89,8 @@ with open(filename) as f:
                 continue
             seen_ids[message_uid] = 1
 
+            total_emotes += len(emotes)
+
             if timestamp not in collisions:
                 collisions[timestamp] = {}
             collisions[timestamp][message_uid] = encode.encode_emotes(emotes)
@@ -105,7 +109,7 @@ for k in list(collisions.keys()):
     if k in chat_data:
         del collisions[k]
 
-print("file={} messages={} collisions={}".format(out_filename, len(chat_data), len(collisions)))
+print("file={} messages={} emotes={} collisions={}".format(out_filename, str(len(chat_data)).ljust(6), str(total_emotes).ljust(7), len(collisions)))
 
 out_data = {
     "collisions": collisions,
