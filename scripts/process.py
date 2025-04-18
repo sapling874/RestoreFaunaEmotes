@@ -21,6 +21,11 @@ out_filename = pathlib.Path("chat_data") / filename.name
 collisions = {}
 chat_data = {}
 
+# One video's data for some reason has messages repeated
+# multiple times. As these aren't actual collisions, track
+# which IDs have already been seen and ignore the repeats.
+seen_ids = {}
+
 def parse(renderer):
     timestamp = renderer["timestampUsec"]
 
@@ -76,6 +81,12 @@ with open(filename) as f:
 
         if len(emotes) > 0:
             message_uid = message_renderer["id"]
+
+            # Ignore duplicate messages.
+            if message_uid in seen_ids:
+                continue
+            seen_ids[message_uid] = 1
+
             if timestamp not in collisions:
                 collisions[timestamp] = {}
             collisions[timestamp][message_uid] = encode.encode_emotes(emotes)
