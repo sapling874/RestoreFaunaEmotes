@@ -25,6 +25,7 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 	}
 
 	timestamp = renderer["timestampUsec"];
+	id = renderer["id"];
 
 	// On standard youtube chat, can't intercept the initial data directly,
 	// so need to build up a data set linking timestamp/author combinations to emotes.
@@ -54,7 +55,14 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 		];
 	}
 
-	const emotes = decodeEmotes(chatData[timestamp]);
+	var emoteData;
+	if (chatData.collisions.hasOwnProperty(timestamp)) {
+		emoteData = chatData.collisions[timestamp][id];
+	} else {
+		emoteData = chatData.messages[timestamp];
+	}
+
+	const emotes = decodeEmotes(emoteData);
 	for (const run of renderer.message.runs) {
 		if (run.text == "□") {
 			delete run["text"];

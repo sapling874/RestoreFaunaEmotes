@@ -18,6 +18,7 @@ if not filename.is_file():
 # Output path in the chat_data directory.
 out_filename = pathlib.Path("chat_data") / filename.name
 
+collisions = {}
 chat_data = {}
 
 def parse(renderer):
@@ -72,12 +73,35 @@ with open(filename) as f:
         else:
             continue
 
+
         if len(emotes) > 0:
-            assert timestamp not in chat_data
+            message_uid = message_renderer["id"]
+            if timestamp not in collisions:
+                collisions[timestamp] = {}
+            collisions[timestamp][message_uid] = encode.encode_emotes(emotes)
+
+            if timestamp in chat_data or len(collisions[timestamp]) > 1:
+                # This message timestamp collides with another.
+                # Remove it from the chat data but keep in collisions.
+                del chat_data[timestamp]
+                continue
             chat_data[timestamp] = encode.encode_emotes(emotes)
+
+# Any timestamps that appear in both the chat_data
+# and collisions dicts, weren't actually collisions.
+# Remove them, leaving only the actual collisions.
+for k in list(collisions.keys()):
+    if k in chat_data:
+        del collisions[k]
 
 print("Output file: ", out_filename)
 print("Total messages stored: ", len(chat_data))
+print("Total collisions: ", len(collisions))
+
+out_data = {
+    "collisions": collisions,
+    "messages": chat_data,
+}
 
 with open(out_filename, "w") as out:
-    json.dump(chat_data, out)
+    json.dump(out_data, out)
