@@ -19,7 +19,7 @@
         "https://studio.youtube.com/live_chat*",
         "https://studio.youtube.com/live_chat_replay*"
       ],
-      "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "fauna.js", "yt-observer.js"],
+      "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "firefox-isolated.js", "yt-observer.js"],
 	  "all_frames": true
     },
 	{
@@ -30,7 +30,7 @@
         "https://studio.youtube.com/live_chat*",
         "https://studio.youtube.com/live_chat_replay*"
       ],
-	  "js": ["patch-fetch.js"],
+	  "js": ["firefox-main.js"],
 	  "all_frames": true,
 	  "world": "MAIN"
 	}
