@@ -16,8 +16,38 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 	} else if (item.hasOwnProperty("liveChatPaidMessageRenderer")) {
 		// Normal superchat.
 		renderer = item.liveChatPaidMessageRenderer;
+	} else if (item.hasOwnProperty("liveChatSponsorshipsGiftPurchaseAnnouncementRenderer")) {
+		// Gifted membership message.
+		// Only need to replace the badge, but the data is in a different place.
+		renderer = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer;
+		badge = renderer.header.liveChatSponsorshipsHeaderRenderer.authorBadges[0].liveChatAuthorBadgeRenderer;
+		imageData = badgesData[badge.tooltip];
+		badge.customThumbnail.thumbnails = [
+			{
+				"url": imageData,
+				"width": 16,
+				"height": 16
+			}
+		];
+		return;
 	} else {
 		return;
+	}
+
+	// The normal youtube chat window doesn't like it when the image url
+	// is changed to moz-extension://.... so use base64 data instead.
+	// The hyperchat window is fine with it, but the youtube javascript
+	// does some processing on it that garbles the URL into an error message.
+	if (renderer.hasOwnProperty("authorBadges")) {
+		badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
+		imageData = badgesData[badge.tooltip];
+		badge.customThumbnail.thumbnails = [
+			{
+				"url": imageData,
+				"width": 16,
+				"height": 16
+			}
+		];
 	}
 
 	if (!renderer.hasOwnProperty("message")) {
@@ -37,22 +67,6 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 			initialDataStore[simpleTimestamp] = {}
 		}
 		initialDataStore[simpleTimestamp][authorName] = []
-	}
-
-	// The normal youtube chat window doesn't like it when the image url
-	// is changed to moz-extension://.... so use base64 data instead.
-	// The hyperchat window is fine with it, but the youtube javascript
-	// does some processing on it that garbles the URL into an error message.
-	if (renderer.hasOwnProperty("authorBadges")) {
-		badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
-		imageData = badgesData[badge.tooltip];
-		badge.customThumbnail.thumbnails = [
-			{
-				"url": imageData,
-				"width": 16,
-				"height": 16
-			}
-		];
 	}
 
 	var emoteData;
