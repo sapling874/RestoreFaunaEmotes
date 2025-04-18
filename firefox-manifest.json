@@ -13,22 +13,16 @@
   "content_scripts": [
     {
       "matches": [
-		"*://*.mozilla.org/*",
         "https://www.youtube.com/live_chat*",
-        "https://www.youtube.com/live_chat_replay*",
-        "https://studio.youtube.com/live_chat*",
-        "https://studio.youtube.com/live_chat_replay*"
+        "https://www.youtube.com/live_chat_replay*"
       ],
       "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "firefox-isolated.js", "yt-observer.js"],
 	  "all_frames": true
     },
 	{
       "matches": [
-		"*://*.mozilla.org/*",
         "https://www.youtube.com/live_chat*",
-        "https://www.youtube.com/live_chat_replay*",
-        "https://studio.youtube.com/live_chat*",
-        "https://studio.youtube.com/live_chat_replay*"
+        "https://www.youtube.com/live_chat_replay*"
       ],
 	  "js": ["firefox-main.js"],
 	  "all_frames": true,
@@ -38,14 +32,6 @@
   "web_accessible_resources": [
 	{
 	  "resources": ["emotes/*.png"],
-	  "matches": ["<all_urls>"]
-	},
-	{
-	  "resources": ["badges/*.png"],
-	  "matches": ["<all_urls>"]
-	},
-	{
-	  "resources": ["chat_data/*.json"],
 	  "matches": ["<all_urls>"]
 	},
 	{
