@@ -1,0 +1,8 @@
+__pycache__/
+
+chat_data/*.gz
+raw_chat_data/*.json
+
+# Build directories.
+chrome/
+firefox/
