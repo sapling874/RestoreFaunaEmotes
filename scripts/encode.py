@@ -40,8 +40,8 @@ encoding = {
     # Common multi-emote messages.
     ("wide1", "wide2", "wide3"): 40,
     ("pinklight", "yay", "greenlight"): 41,
-    ("pinklight", "love", "greenlight"): 41,
-    ("pinklight", "lol", "greenlight"): 41,
+    ("pinklight", "love", "greenlight"): 42,
+    ("pinklight", "lol", "greenlight"): 43,
 }
 
 # Encode a list of emotes in a message.
