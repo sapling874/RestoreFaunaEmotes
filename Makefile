@@ -25,7 +25,9 @@ chrome:
 	cp -r emotes chrome/emotes
 	cp -r icons chrome/icons
 
-	cd chrome; zip -r ../RestoreFaunaEmotes-Chrome.zip *
+	cd chrome; zip -q -r ../RestoreFaunaEmotes-Chrome.zip *
+	sha256sum RestoreFaunaEmotes-Chrome.zip > RestoreFaunaEmotes-Chrome.zip.sha256sum
+	cat RestoreFaunaEmotes-Chrome.zip.sha256sum
 
 .PHONY: firefox
 firefox:
@@ -40,8 +42,10 @@ firefox:
 	cp -r emotes firefox/emotes
 	cp -r icons firefox/icons
 
-	cd firefox; zip -r ../RestoreFaunaEmotes-Firefox.zip *
+	cd firefox; zip -q -r ../RestoreFaunaEmotes-Firefox.zip *
+	sha256sum RestoreFaunaEmotes-Firefox.zip > RestoreFaunaEmotes-Firefox.zip.sha256sum
+	cat RestoreFaunaEmotes-Firefox.zip.sha256sum
 
 .PHONY: clean
 clean:
-	rm -rf chrome/ firefox/ compressed_chat_data/ RestoreFaunaEmotes-Chrome.zip RestoreFaunaEmotes-Firefox.zip
+	rm -rf chrome/ firefox/ compressed_chat_data/ RestoreFaunaEmotes-Chrome.zip* RestoreFaunaEmotes-Firefox.zip*
