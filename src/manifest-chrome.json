@@ -45,8 +45,7 @@
   ],
   "externally_connectable": {
     "matches": [
-      "https://www.youtube.com/",
-	  "https://www.youtube.com/live_chat*",
+      "https://www.youtube.com/live_chat*",
       "https://www.youtube.com/live_chat_replay*"
     ]
   }
