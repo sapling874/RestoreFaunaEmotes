@@ -21,6 +21,9 @@ def get_highlights(chat_data, timestamps_to_offsets):
     near_factor_minutes = 5 + 5*max((max_offset_hours-3)/9, 0)
     near_factor_us = near_factor_minutes*60*1e6
 
+    # Base of 10 highlights, streams longer than 6 hours get up to 3 more.
+    max_highlights = 10 + int(4*max((max_offset_hours - 6)/6, 0))
+
     for ts, emote in chat_data.items():
         if type(emote) != int:
             continue
@@ -36,7 +39,7 @@ def get_highlights(chat_data, timestamps_to_offsets):
 
     selected_highlights = []
     for bucket in ranked_buckets:
-        if len(selected_highlights) > 9:
+        if len(selected_highlights) >= max_highlights:
             break
 
         offset = ts_to_offset(bucket.timestamp)
