@@ -114,9 +114,9 @@ for k in list(collisions.keys()):
     if k in chat_data:
         del collisions[k]
 
-print("file={} messages={} emotes={} collisions={}".format(out_filename, str(len(chat_data)).ljust(6), str(total_emotes).ljust(7), len(collisions)))
-
 highlights = highlights.get_highlights(chat_data, timestamps_to_offsets)
+
+print("file={} messages={} emotes={} collisions={} highlights={}".format(out_filename, str(len(chat_data)).ljust(6), str(total_emotes).ljust(7), len(collisions), len(highlights)))
 
 out_data = {
     "collisions": collisions,

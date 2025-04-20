@@ -4,6 +4,7 @@ process_raw_data:
 	@echo "Total messages: $$(cat stats.txt | awk '{print $$2}' | sed 's/messages=//' | awk '{sum+=$$1;} END{print sum;}')"
 	@echo "Total emotes: $$(cat stats.txt | awk '{print $$3}' | sed 's/emotes=//' | awk '{sum+=$$1;} END{print sum;}')"
 	@echo "Total collisions: $$(cat stats.txt | awk '{print $$4}' | sed 's/collisions=//' | awk '{sum+=$$1;} END{print sum;}')"
+	@echo "Total highlights: $$(cat stats.txt | awk '{print $$5}' | sed 's/highlights=//' | awk '{sum+=$$1;} END{print sum;}')"
 
 .PHONY: compress_chat_data
 compress_chat_data:
