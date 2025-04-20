@@ -38,6 +38,11 @@
 	  "resources": ["chat_data/*.json.gz"],
 	  "matches": ["<all_urls>"]
 	}
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "d56aadd1-0dab-44bd-a9f7-c5fdf9b5ae7f"
+    }
+  }
 }
 
