@@ -1,0 +1,36 @@
+name: Build tagged release
+
+# Run on tagged commits.
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    name: Build and create release
+    runs-on: ubuntu-24.04
+    permissions:
+      # Needed to create the release.
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          export VERSION=$(echo -n '${{ github.ref_name }}' | sed 's/^v//')
+          make compress_chat_data
+          make firefox
+          make chrome
+
+      - name: Create release
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref_name }}
+          draft: true
+          files: |
+            RestoreFaunaEmotes-*
