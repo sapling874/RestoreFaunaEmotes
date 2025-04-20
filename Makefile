@@ -1,3 +1,5 @@
+VERSION ?= 0.0.1
+
 .PHONY: process_raw_data
 process_raw_data:
 	time ls raw_chat_data/ | xargs -P 8 -I {} python scripts/process.py raw_chat_data/{} | tee stats.txt
@@ -19,6 +21,8 @@ chrome:
 	cp -r src/chrome chrome/
 	cp src/manifest-chrome.json chrome/manifest.json
 
+	sed -i 's/__VERSION__/$(VERSION)/g' chrome/manifest.json
+
 	rm -rf chrome/chat_data
 
 	cp -r compressed_chat_data chrome/chat_data
@@ -35,6 +39,8 @@ firefox:
 	cp -r src/common firefox/
 	cp -r src/firefox firefox/
 	cp src/manifest-firefox.json firefox/manifest.json
+
+	sed -i 's/__VERSION__/$(VERSION)/g' firefox/manifest.json
 
 	rm -rf firefox/chat_data
 
