@@ -1,6 +1,5 @@
 __pycache__/
 
-chat_data/*.json
 raw_chat_data/*.json
 compressed_chat_data/*.gz
 
