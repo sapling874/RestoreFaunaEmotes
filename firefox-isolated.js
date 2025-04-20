@@ -27,6 +27,10 @@ async function loadData(videoId) {
 
 	replaceInitialData();
 
+	if (chatData.hasOwnProperty("highlights")) {
+		createHighlights(chatData["highlights"]);
+	}
+
 	return;
 }
 

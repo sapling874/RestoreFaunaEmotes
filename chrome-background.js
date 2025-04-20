@@ -1,6 +1,6 @@
 importScripts("./video-ids.js", "./badges-base64.js", "./decode.js", "patch-message.js");
 
-async function patchActions(sendResponse, videoId, actions, isInitialData) {
+async function loadData(videoId) {
 	const fileLocation = chrome.runtime.getURL(`chat_data/${videoId}.live_chat.json.gz`);
 
 	ds = new DecompressionStream("gzip");
@@ -8,10 +8,15 @@ async function patchActions(sendResponse, videoId, actions, isInitialData) {
 	blob = await data.blob();
 	streamData = blob.stream().pipeThrough(ds);
 	jsonData = await new Response(streamData).json();
-	chatData = jsonData;
 	
 	console.debug("Loaded chat data for video ID: ", videoId);
 	console.debug("Loaded from file location ", fileLocation);
+
+	return jsonData
+}
+
+async function patchActions(sendResponse, videoId, actions, isInitialData) {
+	chatData = await loadData(videoId);
 
 	var initialDataStore = {};
 
@@ -23,6 +28,18 @@ async function patchActions(sendResponse, videoId, actions, isInitialData) {
 		sendResponse([actions, initialDataStore]);
 	} else {
 		sendResponse(actions);
+	}
+}
+
+async function getHighlights(sendResponse, videoId) {
+	chatData = await loadData(videoId);
+
+	if (chatData.hasOwnProperty("highlights")) {
+		console.log("Loaded highlights: ", chatData["highlights"]);
+		sendResponse(chatData["highlights"]);
+	} else {
+		console.log("Not found highlights");
+		sendResponse({});
 	}
 }
 
@@ -39,6 +56,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 	}
 	if (msg.action == "patchInitialData") {
 		patchActions(sendResponse, msg.videoId, msg.actions, true);
+	}
+	if (msg.action == "getHighlights") {
+		getHighlights(sendResponse, msg.videoId);
 	}
 	return true;
 });

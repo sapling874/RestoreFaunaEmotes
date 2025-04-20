@@ -16,7 +16,7 @@
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*"
       ],
-      "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "firefox-isolated.js", "yt-observer.js"],
+      "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "highlights.js", "firefox-isolated.js", "yt-observer.js"],
 	  "all_frames": true
     },
 	{

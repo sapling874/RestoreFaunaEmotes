@@ -50,7 +50,12 @@ async function replaceInitialData() {
 		"videoId": videoId
 	});
 	if (isFaunaVideoId) {
-		replaceInitialData();
+		await replaceInitialData();
+		highlights = await chrome.runtime.sendMessage({
+			"action": "getHighlights",
+			"videoId": videoId
+		});
+		createHighlights(highlights);
 	}
 })();
 
