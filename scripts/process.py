@@ -5,6 +5,7 @@ import pathlib
 import sys
 
 import encode
+import highlights
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", type=pathlib.Path)
@@ -22,6 +23,8 @@ collisions = {}
 chat_data = {}
 
 total_emotes = 0
+
+timestamps_to_offsets = []
 
 # One video's data for some reason has messages repeated
 # multiple times. As these aren't actual collisions, track
@@ -80,6 +83,8 @@ with open(filename) as f:
         else:
             continue
 
+        timestamps_to_offsets.append((timestamp, chat_message["replayChatItemAction"]["videoOffsetTimeMsec"]))
+
 
         if len(emotes) > 0:
             message_uid = message_renderer["id"]
@@ -111,8 +116,11 @@ for k in list(collisions.keys()):
 
 print("file={} messages={} emotes={} collisions={}".format(out_filename, str(len(chat_data)).ljust(6), str(total_emotes).ljust(7), len(collisions)))
 
+highlights = highlights.get_highlights(chat_data, timestamps_to_offsets)
+
 out_data = {
     "collisions": collisions,
+    "highlights": highlights,
     "messages": chat_data,
 }
 
