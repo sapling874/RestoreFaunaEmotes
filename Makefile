@@ -15,9 +15,9 @@ compress_chat_data:
 .PHONY: chrome
 chrome:
 	mkdir -p chrome
-	cp *.js chrome/
-	rm chrome/firefox*
-	cp chrome-manifest.json chrome/manifest.json
+	cp -r src/common chrome/
+	cp -r src/chrome chrome/
+	cp src/manifest-chrome.json chrome/manifest.json
 
 	rm -rf chrome/chat_data
 
@@ -30,9 +30,9 @@ chrome:
 .PHONY: firefox
 firefox:
 	mkdir -p firefox
-	cp *.js firefox/
-	rm firefox/chrome*
-	cp firefox-manifest.json firefox/manifest.json
+	cp -r src/common firefox/
+	cp -r src/firefox firefox/
+	cp src/manifest-firefox.json firefox/manifest.json
 
 	rm -rf firefox/chat_data
 

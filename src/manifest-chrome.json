@@ -10,24 +10,28 @@
     "96": "icons/sapling-96.png"
   },
 
+  "background": {
+	"service_worker": "chrome/background.js"
+  },
+
   "content_scripts": [
     {
       "matches": [
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*"
       ],
-      "js": ["video-ids.js", "badges-base64.js", "decode.js", "patch-message.js", "highlights.js", "firefox-isolated.js", "yt-observer.js"],
+      "js": ["common/badges-base64.js", "common/decode.js", "common/highlights.js", "chrome/isolated.js", "common/yt-observer.js"],
 	  "all_frames": true
     },
-	{
+    {
       "matches": [
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*"
       ],
-	  "js": ["firefox-main.js"],
-	  "all_frames": true,
-	  "world": "MAIN"
-	}
+      "js": ["common/video-ids.js", "chrome/main.js"],
+	  "world": "MAIN",
+	  "all_frames": true
+    }
   ],
   "web_accessible_resources": [
 	{
@@ -38,6 +42,13 @@
 	  "resources": ["chat_data/*.json.gz"],
 	  "matches": ["<all_urls>"]
 	}
-  ]
+  ],
+  "externally_connectable": {
+    "matches": [
+      "https://www.youtube.com/",
+	  "https://www.youtube.com/live_chat*",
+      "https://www.youtube.com/live_chat_replay*"
+    ]
+  }
 }
 

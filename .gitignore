@@ -5,8 +5,8 @@ raw_chat_data/*.json
 compressed_chat_data/*.gz
 
 # Build directories.
-chrome/
-firefox/
+/chrome/
+/firefox/
 
 # Build files
 RestoreFaunaEmotes-Chrome.zip
