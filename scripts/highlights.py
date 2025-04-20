@@ -48,6 +48,10 @@ def get_highlights(chat_data, timestamps_to_offsets):
         if offset < 300 or (max_offset-offset) < 300:
             continue
 
+        if offset < 600 and bucket.most_common == 1:
+            # Ignore hearts in streams with longer intro screens.
+            continue
+
         time_diffs = [abs(b.timestamp-bucket.timestamp) for b in selected_highlights]
         too_near = any(d<near_factor_us for d in time_diffs)
         if too_near:
