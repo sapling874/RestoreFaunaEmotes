@@ -18,6 +18,8 @@ chrome:
 	rm chrome/firefox*
 	cp chrome-manifest.json chrome/manifest.json
 
+	rm -rf chrome/chat_data
+
 	cp -r compressed_chat_data chrome/chat_data
 	cp -r emotes chrome/emotes
 	cp -r icons chrome/icons
@@ -30,6 +32,8 @@ firefox:
 	cp *.js firefox/
 	rm firefox/chrome*
 	cp firefox-manifest.json firefox/manifest.json
+
+	rm -rf firefox/chat_data
 
 	cp -r compressed_chat_data firefox/chat_data
 	cp -r emotes firefox/emotes
