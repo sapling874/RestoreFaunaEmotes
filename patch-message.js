@@ -45,14 +45,17 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 	// does some processing on it that garbles the URL into an error message.
 	if (renderer.hasOwnProperty("authorBadges")) {
 		badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
-		imageData = badgesData[badge.tooltip];
-		badge.customThumbnail.thumbnails = [
-			{
-				"url": imageData,
-				"width": 16,
-				"height": 16
-			}
-		];
+		// Verified users have badges but not custom ones.
+		if (badge.hasOwnProperty("customThumbnail")) {
+			imageData = badgesData[badge.tooltip];
+			badge.customThumbnail.thumbnails = [
+				{
+					"url": imageData,
+					"width": 16,
+					"height": 16
+				}
+			];
+		}
 	}
 
 	if (!renderer.hasOwnProperty("message")) {
