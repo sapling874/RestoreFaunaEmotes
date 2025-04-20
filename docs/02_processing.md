@@ -1,5 +1,7 @@
 ## Data processing
 
+### Data format
+
 The raw chat data is multiple tens of gigabytes,
 far to much to fit inside an extension. It does
 compress very well, but still not enough and most
@@ -55,4 +57,27 @@ size reduction actually comes from the timestamps, as they share
 a lot of leading digits they compress very well, with only the
 millisecond and microsecond level digits acting as the "random"
 element of the identifier.
+
+### Processing the raw data
+
+The file `scripts/encode.py` needs to be set up with the
+names of the emotes as they are represented in the chat data.
+
+Any combinations of different emotes that are commonly used
+can also be given an integer encoding.
+
+Then to actually process the raw data, use the makefile
+
+```
+$ make process_raw_data
+```
+
+This will run each file in the `raw_chat_data` directory through
+the `process.py` script, outputting a file in the `chat_data` directory.
+
+The data should then be compressed with `make compress_chat_data` and
+then it can be built with `make firefox` or `make chrome`.
+
+That will output a zip file that you can load into a browser
+(with extension developer tools enabled).
 
