@@ -20,6 +20,11 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 		// Gifted membership message.
 		// Only need to replace the badge, but the data is in a different place.
 		renderer = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer;
+		if (!renderer.header.liveChatSponsorshipsHeaderRenderer.hasOwnProperty("authorBadges")) {
+			// Not sure how, but is is possible that some member gift messages don't
+			// have their own membership badge. urMWdWlzDCw at stream start for example.
+			return;
+		}
 		badge = renderer.header.liveChatSponsorshipsHeaderRenderer.authorBadges[0].liveChatAuthorBadgeRenderer;
 		imageData = badgesData[badge.tooltip];
 		badge.customThumbnail.thumbnails = [
