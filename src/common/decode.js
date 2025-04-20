@@ -38,6 +38,10 @@ const encoding = {
 	41: ["pinklight", "yay", "greenlight"],
 	42: ["pinklight", "love", "greenlight"],
 	43: ["pinklight", "lol", "greenlight"],
+	44: ["pinklight", "hugsnail", "greenlight"],
+	45: ["pinklight", "comfy", "greenlight"],
+	46: ["pinklight", "zoom", "greenlight"],
+	47: ["pinklight", "clover", "greenlight"],
 }
 
 function* decodeEmotes(emotes) {

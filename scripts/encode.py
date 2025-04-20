@@ -42,6 +42,10 @@ encoding = {
     ("pinklight", "yay", "greenlight"): 41,
     ("pinklight", "love", "greenlight"): 42,
     ("pinklight", "lol", "greenlight"): 43,
+    ("pinklight", "hugsnail", "greenlight"): 44,
+    ("pinklight", "comfy", "greenlight"): 45,
+    ("pinklight", "zoom", "greenlight"): 46,
+    ("pinklight", "clover", "greenlight"): 47,
 }
 
 # Encode a list of emotes in a message.
