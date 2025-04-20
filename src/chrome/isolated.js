@@ -5,7 +5,7 @@
 idDiv = document.createElement("div");
 idDiv.id = "fauna-extension-id";
 idDiv.textContent = chrome.runtime.id;
-idDiv.style = "display: none;"
+idDiv.style = "display: none;";
 document.querySelector("body").appendChild(idDiv);
 
 var videoId;

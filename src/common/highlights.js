@@ -2,7 +2,7 @@ function createHighlights(highlights) {
 	if (highlights.length == 0) {
 		return;
 	}
-	
+
 	const parentDocument = window.parent.document;
 	const video = parentDocument.querySelector("video");
 	const duration = video.duration;

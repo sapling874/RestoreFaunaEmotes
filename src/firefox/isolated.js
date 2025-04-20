@@ -38,7 +38,7 @@ function replaceInitialData() {
 	const scripts = document.querySelector("body").querySelectorAll("script");
 	if (!scripts) {
 		console.error("Unable to get script elements");
-		return
+		return;
 	}
 
 	for (const script of scripts) {

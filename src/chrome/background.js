@@ -12,7 +12,7 @@ async function loadData(videoId) {
 	console.debug("Loaded chat data for video ID: ", videoId);
 	console.debug("Loaded from file location ", fileLocation);
 
-	return jsonData
+	return jsonData;
 }
 
 async function patchActions(sendResponse, videoId, actions, isInitialData) {

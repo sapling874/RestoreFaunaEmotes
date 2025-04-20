@@ -1,5 +1,5 @@
 function patchMessage(message, chatData, initialDataStore, isInitialData) {
-	const action = message.replayChatItemAction.actions[0]
+	const action = message.replayChatItemAction.actions[0];
 
 	if (!action.hasOwnProperty("addChatItemAction")) {
 		return;
