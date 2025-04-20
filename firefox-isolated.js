@@ -37,9 +37,9 @@ function replaceInitialData() {
 		return
 	}
 
-	for (var i=0; i<scripts.length; i++) {
+	for (const script of scripts) {
 		const start = 'window["ytInitialData"] = ';
-		const text = scripts[i].text;
+		const text = script.text;
 		if (!text || !text.startsWith(start)) {
 			continue;
 		}
@@ -47,10 +47,8 @@ function replaceInitialData() {
 		for (const action of initialData.continuationContents.liveChatContinuation.actions) {
 			patchMessage(action, chatData, timestampNameData, true);
 		}
-		const newScript = document.createElement("script");
 		stringData = JSON.stringify(initialData);
-		newScript.text = `${start}${stringData};`;
-		document.querySelector("body").querySelectorAll("script")[i].replaceWith(newScript);
+		script.text = `${start}${stringData};`;
 	}
 }
 

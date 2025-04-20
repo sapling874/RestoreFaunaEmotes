@@ -22,7 +22,7 @@ async function replaceInitialData() {
 		return;
 	}
 
-	for (const [index, script] of scripts.entries()) {
+	for (const script of scripts) {
 		const start = 'window["ytInitialData"] = ';
 		const text = script.text;
 		if (!text || !text.startsWith(start)) {
