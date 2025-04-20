@@ -14,6 +14,12 @@ def get_highlights(chat_data, timestamps_to_offsets):
                 return int(o)//1000 - 10
 
     max_offset = max(int(item[1])//1000 for item in timestamps_to_offsets)
+    max_offset_hours = max_offset/3600
+
+    # No highlights closer than 5 minutes.
+    # For streams longer than 3 hours, scales up to 10 minutes at 12 hours.
+    near_factor_minutes = 5 + 5*max((max_offset_hours-3)/9, 0)
+    near_factor_us = near_factor_minutes*60*1e6
 
     for ts, emote in chat_data.items():
         if type(emote) != int:
@@ -35,13 +41,12 @@ def get_highlights(chat_data, timestamps_to_offsets):
 
         offset = ts_to_offset(bucket.timestamp)
 
-        if offset < 300:
-            continue
-        if (max_offset-offset) < 300:
+        # Ignore beginning and end of stream.
+        if offset < 300 or (max_offset-offset) < 300:
             continue
 
         time_diffs = [abs(b.timestamp-bucket.timestamp) for b in selected_highlights]
-        too_near = any(d<300*1e6 for d in time_diffs)
+        too_near = any(d<near_factor_us for d in time_diffs)
         if too_near:
             continue
 
