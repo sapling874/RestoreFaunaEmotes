@@ -8,6 +8,6 @@ compressed_chat_data/*.gz
 /firefox/
 
 # Build files
-RestoreFaunaEmotes-Chrome.zip
-RestoreFaunaEmotes-Firefox.zip
+RestoreFaunaEmotes-Chrome.zip*
+RestoreFaunaEmotes-Firefox.zip*
 stats.txt
