@@ -9,7 +9,10 @@ function replaceBadge(node) {
 	}
 	badge = node.querySelector("yt-live-chat-author-chip > #chat-badges > yt-live-chat-author-badge-renderer > #image > img");
 	if (badge) {
-		badge.src = badgesData[badge.alt];
+		badgeId = getBadgeIdFromUrl(badge.src);
+		if (badgeId) {
+			badge.src = badgesData[badgeId];
+		}
 	}
 }
 

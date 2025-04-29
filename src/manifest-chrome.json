@@ -20,7 +20,7 @@
         "https://www.youtube.com/live_chat*",
         "https://www.youtube.com/live_chat_replay*"
       ],
-      "js": ["common/badges-base64.js", "common/decode.js", "common/highlights.js", "chrome/isolated.js", "common/yt-observer.js"],
+      "js": ["common/badges-base64.js", "common/parse-badge.js", "common/decode.js", "common/highlights.js", "chrome/isolated.js", "common/yt-observer.js"],
 	  "all_frames": true
     },
     {

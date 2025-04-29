@@ -26,14 +26,17 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 			return;
 		}
 		badge = renderer.header.liveChatSponsorshipsHeaderRenderer.authorBadges[0].liveChatAuthorBadgeRenderer;
-		imageData = badgesData[badge.tooltip];
-		badge.customThumbnail.thumbnails = [
-			{
-				"url": imageData,
-				"width": 16,
-				"height": 16
-			}
-		];
+		badgeId = getBadgeId(badge);
+		if (badgeId) {
+			imageData = badgesData[badgeId];
+			badge.customThumbnail.thumbnails = [
+				{
+					"url": imageData,
+					"width": 16,
+					"height": 16
+				}
+			];
+		}
 		return;
 	} else {
 		return;
@@ -45,9 +48,9 @@ function patchMessage(message, chatData, initialDataStore, isInitialData) {
 	// does some processing on it that garbles the URL into an error message.
 	if (renderer.hasOwnProperty("authorBadges")) {
 		badge = renderer.authorBadges[0].liveChatAuthorBadgeRenderer;
-		// Verified users have badges but not custom ones.
-		if (badge.hasOwnProperty("customThumbnail")) {
-			imageData = badgesData[badge.tooltip];
+		badgeId = getBadgeId(badge);
+		if (badgeId) {
+			imageData = badgesData[badgeId];
 			badge.customThumbnail.thumbnails = [
 				{
 					"url": imageData,
