@@ -1,4 +1,4 @@
-importScripts("../common/video-ids.js", "../common/badges-base64.js", "../common/decode.js", "../common/patch-message.js");
+importScripts("../common/video-ids.js", "../common/badges-base64.js", "../common/parse-badge.js", "../common/decode.js", "../common/patch-message.js");
 
 async function loadData(videoId) {
 	const fileLocation = chrome.runtime.getURL(`chat_data/${videoId}.live_chat.json.gz`);

@@ -9,7 +9,16 @@ function replaceBadge(node) {
 	}
 	badge = node.querySelector("yt-live-chat-author-chip > #chat-badges > yt-live-chat-author-badge-renderer > #image > img");
 	if (badge) {
-		badge.src = badgesData[badge.alt];
+		if (badge.src.startsWith("data:img/png")) {
+			// Reparsing an already replaced badge.
+			// Happens when quickly scrubbing back to the start of a stream.
+			// Don't need to do anything.
+			return;
+		}
+		badgeId = getBadgeIdFromUrl(badge.src);
+		if (badgeId) {
+			badge.src = badgesData[badgeId];
+		}
 	}
 }
 
