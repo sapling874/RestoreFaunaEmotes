@@ -32,6 +32,12 @@ function replaceMessageEmotes(node, isMemberchat, isSuperchat) {
 		const header = card.querySelector("#header").querySelector("#header-content");
 		timestamp = header.querySelector("#timestamp").textContent;
 		authorBox = header.querySelector("#header-content-primary-column > #header-content-inner-column > yt-live-chat-author-chip");
+		if (!authorBox) {
+			// Rare error when skipping into a stream
+			// and membership messages appear before
+			// the observer has been disconnected.
+			return true;
+		}
 		authorName = authorBox.querySelector("#author-name").textContent;
 		message = card.querySelector("#content > #message");
 
@@ -41,6 +47,11 @@ function replaceMessageEmotes(node, isMemberchat, isSuperchat) {
 		const header = card.querySelector("#header").querySelector("#header-content");
 		timestamp = header.querySelector("#timestamp").textContent;
 		authorBox = header.querySelector("#header-content-primary-column > #single-line > #author-name-chip > yt-live-chat-author-chip");
+		if (!authorBox) {
+			// Haven't seen this with SCs but adding
+			// the same safety guard as for memberships.
+			return true;
+		}
 		authorName = authorBox.querySelector("#author-name").textContent;
 		message = card.querySelector("#content > #message");
 
